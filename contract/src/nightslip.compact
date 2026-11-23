@@ -1,0 +1,95 @@
+// Nightslip — prove "I earn at least X" without revealing salary or employer.
+// SPDX-License-Identifier: Apache-2.0
+
+pragma language_version >= 0.20;
+
+import CompactStandardLibrary;
+
+// A private payslip, known only to the issuer (employer) and the employee.
+export struct Slip {
+  amount: Uint<64>;   // net monthly pay, in cents
+  period: Uint<32>;   // YYYYMM, e.g. 202611
+  salt: Bytes<32>;    // random blinding factor
+  issuerPk: Bytes<32>;
+}
+
+// Public result of a successful income proof, keyed by the verifier's challenge.
+export struct Attestation {
+  threshold: Uint<64>;
+  minPeriod: Uint<32>;
+}
+
+// ---------------------------------------------------------------- public ledger
+export ledger admin: Bytes<32>;
+export ledger issuers: Set<Bytes<32>>;
+export ledger slips: HistoricMerkleTree<16, Bytes<32>>;
+export ledger slipCount: Counter;
+export ledger nullifiers: Set<Bytes<32>>;
+export ledger attestations: Map<Bytes<32>, Attestation>;
+
+// ---------------------------------------------------------------- private inputs
+witness secretKey(): Bytes<32>;
+witness newSlip(): Slip;
+witness heldSlip(): Slip;
+witness slipPath(commitment: Bytes<32>): MerkleTreePath<16, Bytes<32>>;
+
+constructor() {
+  admin = disclose(publicKey(secretKey()));
+}
+
+export pure circuit publicKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "nightslip:pk:"), sk]);
+}
+
+export pure circuit slipCommitment(employeePk: Bytes<32>, s: Slip): Bytes<32> {
+  return persistentHash<Vector<6, Bytes<32>>>([
+    pad(32, "nightslip:slip:"),
+    s.issuerPk,
+    employeePk,
+    (s.amount as Field) as Bytes<32>,
+    (s.period as Field) as Bytes<32>,
+    s.salt
+  ]);
+}
+
+pure circuit nullifier(sk: Bytes<32>, commitment: Bytes<32>, challenge: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<4, Bytes<32>>>([pad(32, "nightslip:null:"), sk, commitment, challenge]);
+}
+
+// Admin (e.g. a payroll provider such as Keel) whitelists an employer key.
+export circuit registerIssuer(issuerPk: Bytes<32>): [] {
+  assert(admin == publicKey(secretKey()), "Only the admin can register issuers");
+  issuers.insert(disclose(issuerPk));
+}
+
+// Employer issues a payslip. Amount, period, salt and the employee stay private;
+// only a hiding commitment lands on the public ledger.
+export circuit issueSlip(employeePk: Bytes<32>): [] {
+  const me = publicKey(secretKey());
+  assert(issuers.member(disclose(me)), "Issuer is not registered");
+  const s = newSlip();
+  assert(s.issuerPk == me, "Slip must name the issuing employer");
+  assert(s.amount > 0, "Amount must be positive");
+  slips.insert(disclose(slipCommitment(employeePk, s)));
+  slipCount.increment(1);
+}
+
+// Employee proves to a verifier (landlord, lender, visa office):
+//   "I hold a payslip from a registered employer, dated minPeriod or later,
+//    paying at least `threshold`" — without revealing amount, employer or which slip.
+// The verifier supplies a fresh `challenge`; the result is recorded under it.
+export circuit proveIncome(threshold: Uint<64>, minPeriod: Uint<32>, challenge: Bytes<32>): [] {
+  const sk = secretKey();
+  const s = heldSlip();
+  const c = slipCommitment(publicKey(sk), s);
+  const path = slipPath(c);
+  assert(path.leaf == c, "Path does not match the payslip");
+  assert(slips.checkRoot(disclose(merkleTreePathRoot<16, Bytes<32>>(path))), "Payslip not found on the ledger");
+  assert(s.amount >= threshold, "Income below threshold");
+  assert(s.period >= minPeriod, "Payslip too old");
+  const n = nullifier(sk, c, challenge);
+  assert(!nullifiers.member(disclose(n)), "Proof already submitted for this challenge");
+  nullifiers.insert(disclose(n));
+  assert(!attestations.member(disclose(challenge)), "Challenge already used");
+  attestations.insert(disclose(challenge), Attestation { threshold: disclose(threshold), minPeriod: disclose(minPeriod) });
+}

@@ -1,0 +1,24 @@
+{
+  "name": "nightslip",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "contract",
+    "cli",
+    "ui"
+  ],
+  "scripts": {
+    "compact": "npm -w contract run compact",
+    "test": "npm -w contract test",
+    "build": "npm -w contract run build && npm -w ui run build",
+    "dev": "npm -w ui run dev",
+    "devnet:up": "cd cli && docker compose up -d --wait",
+    "e2e:devnet": "npm -w cli run deploy -- --network undeployed",
+    "e2e:preprod": "npm -w cli run deploy -- --network preprod"
+  },
+  "overrides": {
+    "@midnight-ntwrk/onchain-runtime-v3": "3.0.0"
+  }
+}

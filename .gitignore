@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+*.log
+reports/
+midnight-level-db/
+.midnight-state.json
+.midnight-wallet-state/
+.midnight-wallet-state*
+*.seed

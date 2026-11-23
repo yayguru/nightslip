@@ -1,0 +1,24 @@
+{
+  "name": "@nightslip/contract",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "default": "./dist/index.js" } },
+  "scripts": {
+    "compact": "compact compile src/nightslip.compact src/managed/nightslip",
+    "test": "vitest run",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && cp -Rf src/managed dist/managed && cp src/nightslip.compact dist/",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@midnight-ntwrk/compact-runtime": "0.16.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0",
+    "@types/node": "^24.0.0"
+  }
+}

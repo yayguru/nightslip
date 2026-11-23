@@ -1,0 +1,49 @@
+╔══════════════════════════════════════════════════════════════╗
+║  Deploy nightslip to undeployed
+╚══════════════════════════════════════════════════════════════╝
+─── Wallet setup ───────────────────────────────────────────────
+  Creating wallet...
+  Restored 3/3 child wallets from .midnight-wallet-state — sync will resume from saved point.
+  Syncing with network...
+  ℹ  This may take several minutes depending on network size.
+     RPC disconnection messages during sync are normal and can be safely ignored.
+  ✓ Synced with network.                                      
+  Wallet Address: mn_addr_undeployed1h3ssm5ru2t6eqy4g3she78zlxn96e36ms6pq996aduvmateh9p9sk96u7s
+  Balance: 250,000,000,000,000 tNight
+─── DUST Token Setup ───────────────────────────────────────────
+  DUST tokens ready!
+─── Deploy Contract ────────────────────────────────────────────
+  Checking proof server...
+2026-11-23 03:00:30        RPC-CORE: subscribeRuntimeVersion(): RuntimeVersion:: disconnected from ws://127.0.0.1:9944/: 1000:: Normal Closure
+2026-11-23 03:00:30        RPC-CORE: subscribeRuntimeVersion(): RuntimeVersion:: disconnected from ws://127.0.0.1:9944/: 1000:: Normal Closure
+  Proof server ready!                                 
+  Setting up providers...
+  Generating DUST... done.
+  Deploying contract...
+  ✅ Contract deployed successfully!
+  Contract Address: 211d46c7a3cb2bac75878b578407a3526cabb0cf35220a2faf6205fb015a6455
+  Saved to .midnight-state.json
+─── Nightslip scenario ─────────────────────────────────────────
+  ✓ registerIssuer: tx 0096315595304eb3c90c0312aa6ceb9ed55369d59a65e9cd5dfb3f1df72991fcb7 @ block 51
+  ✓ issueSlip: tx 00359665b5be03838ca2588edf8d71bb79e4f293f5f4560860f66bf113b42faed7 @ block 55
+  ✓ proveIncome: tx 00f4e81167fa28f859b2b8280a784e6f33aef29b152cf4a8fb52e406306bd15ad5 @ block 59
+  ✓ replay same challenge: rejected (Unexpected error executing scoped transaction '<unnamed>': Error: failed assert: Proof alr)
+  ✓ claim above real income: rejected (Unexpected error executing scoped transaction '<unnamed>': Error: failed assert: Income be)
+  Public ledger after scenario:
+    {
+      "admin": "13f4804eeb580a120ecd3436b1a3f9f6c67930737b29ecb48100110018ae4df8",
+      "issuers": "1",
+      "slipCount": "1",
+      "nullifiers": "1",
+      "attestations": [
+        {
+          "challenge": "fcb3c5c17bda1b5556bd70ecb527fdd4be638f39670f71c61d5f1847d7914527",
+          "threshold": "3000",
+          "minPeriod": "202610"
+        }
+      ]
+    }
+  Saved ../deployments/undeployed.json
+─── Deployment complete ────────────────────────────────────────
+  Scenario output: deployments/<network>.json
+exit=0

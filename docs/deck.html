@@ -1,0 +1,77 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@page{size:1280px 720px;margin:0}
+*{box-sizing:border-box}body{margin:0;font-family:"DejaVu Sans",Arial,sans-serif;color:#e8e9f3}
+.s{width:1280px;height:720px;padding:64px 80px;background:radial-gradient(circle at 85% 10%,#2a2470 0,#0b0c1d 55%);page-break-after:always;position:relative;overflow:hidden}
+h1{font-size:72px;margin:120px 0 12px;letter-spacing:-1px}h2{font-size:44px;margin:0 0 28px;color:#fff}
+.k{color:#a59bff}.sub{font-size:28px;color:#b9bbd6;max-width:900px;line-height:1.4}
+p,li{font-size:25px;line-height:1.5;color:#cfd1e6}ul{padding-left:28px}
+.foot{position:absolute;bottom:32px;left:80px;font-size:16px;color:#7d80a8}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.card{background:#16173a;border:1px solid #2f3170;border-radius:16px;padding:22px}
+.card b{display:block;font-size:22px;color:#fff;margin-bottom:8px}.card span{font-size:18px;color:#b9bbd6;line-height:1.45}
+.big{font-size:120px;font-weight:700;color:#a59bff;line-height:1}
+table{border-collapse:collapse;width:100%;font-size:21px}td,th{border-bottom:1px solid #2f3170;padding:12px 10px;text-align:left}th{color:#a59bff}
+code{font-family:"DejaVu Sans Mono",monospace;font-size:18px;color:#d7d2ff}
+pre{background:#11122c;border:1px solid #2f3170;border-radius:12px;padding:20px;font-size:17px;line-height:1.45;color:#d7d2ff;margin:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+</style></head><body>
+<div class="s"><div style="font-size:22px;color:#a59bff;margin-top:40px">Midnight Network · Wave hackathon</div>
+<h1>Nightslip</h1><div class="sub">Prove <span class="k">“I earn at least X”</span> in zero knowledge, without showing the salary, the employer, or the payslip.</div>
+<div class="foot">Compact contract · midnight-js 4.1.1 · Apache-2.0</div></div>
+
+<div class="s"><h2>The problem</h2><div class="two"><div>
+<p>To rent a flat, get a loan or a work visa, people send <b>full payslips and bank statements</b> to strangers.</p>
+<p>The verifier needs one bit: <span class="k">income ≥ threshold?</span> They receive salary, employer, tax ID, address.</p></div>
+<div><div class="big">1 bit</div><p>is all a landlord needs. Today they get the whole document, and keep it.</p></div></div></div>
+
+<div class="s"><h2>How Nightslip works</h2><div class="grid">
+<div class="card"><b>1 · Admin</b><span>Payroll provider / registry registers employer keys on chain.</span></div>
+<div class="card"><b>2 · Employer</b><span>Issues a payslip. Only a hiding commitment enters a HistoricMerkleTree.</span></div>
+<div class="card"><b>3 · Employee</b><span>Proves amount ≥ threshold and period ≥ minPeriod for the verifier's challenge, using a ZK proof.</span></div>
+<div class="card"><b>4 · Verifier</b><span>Reads attestations[challenge] = {threshold, minPeriod}. Nothing else.</span></div></div>
+<p style="margin-top:36px">Private: amount · employer · employee · which slip.&nbsp;&nbsp;Public: commitment, nullifier, the verifier's own threshold.</p></div>
+
+<div class="s"><h2>Contract (Compact)</h2><div class="two"><pre>export circuit proveIncome(threshold: Uint&lt;64&gt;,
+    minPeriod: Uint&lt;32&gt;, challenge: Bytes&lt;32&gt;): [] {
+  const sk = secretKey();
+  const s  = heldSlip();
+  const c  = slipCommitment(publicKey(sk), s);
+  const path = slipPath(c);
+  assert(slips.checkRoot(disclose(
+    merkleTreePathRoot&lt;16, Bytes&lt;32&gt;&gt;(path))), ...);
+  assert(s.amount &gt;= threshold, ...);
+  assert(s.period &gt;= minPeriod, ...);
+  const n = nullifier(sk, c, challenge);
+  assert(!nullifiers.member(disclose(n)), ...);
+  nullifiers.insert(disclose(n));
+  attestations.insert(disclose(challenge), ...);
+}</pre><ul>
+<li>Commitment binds issuer, employee key, amount, period, salt</li>
+<li>Only registered issuers can add slips, in their own name</li>
+<li>Stolen slip is useless without the holder's key</li>
+<li>Nullifier + challenge: no replay</li>
+<li>Domain-separated <code>persistentHash</code></li></ul></div></div>
+
+<div class="s"><h2>Built and tested</h2><table>
+<tr><th>What</th><th>Result</th></tr>
+<tr><td>Contract unit tests (simulator)</td><td>12 / 12 passing: forgery, theft, replay, stale slip, rogue issuer</td></tr>
+<tr><td>Real Midnight network run (devnet: node 1.0.0, indexer 4.3.3, proof-server 8.1.0)</td><td>deploy → registerIssuer → issueSlip → proveIncome, all <code>SucceedEntirely</code></td></tr>
+<tr><td>Negative checks on network</td><td>replayed challenge ✗ · over-claim ✗ (no proof can be built)</td></tr>
+<tr><td>Browser demo</td><td>compiled contract running in-browser, four role cards + live public ledger view</td></tr>
+<tr><td>Version alignment</td><td>compactc 0.31.1 → runtime 0.16 → ledger v8 (Preprod)</td></tr></table></div>
+
+<div class="s"><h2>Who pays for this</h2><div class="two"><div><ul>
+<li><b>Payroll / EOR platforms:</b> “proof of income” API as a feature</li>
+<li><b>Rental platforms:</b> income ≥ 3× rent check without document storage (GDPR win)</li>
+<li><b>Lenders / BNPL:</b> pre-qualification without data collection</li>
+<li><b>Consulates:</b> digital-nomad visa income floors</li></ul></div>
+<div><p><b>Model:</b> issuers pay per issued slip; verifiers pay per verification. Holders free.</p><p><b>Why Midnight:</b> private state plus selective disclosure is native, not bolted on.</p></div></div></div>
+
+<div class="s"><h2>Roadmap</h2><ul>
+<li>Issuer revocation and slip expiry</li>
+<li>Multi-slip proofs: average over N months ≥ X</li>
+<li>Lace wallet integration and a verifier QR flow</li>
+<li>Payroll-provider SDK: issue slips straight from payroll runs</li>
+<li>Preprod → mainnet deployment</li></ul>
+<div class="foot">github.com/yayguru/nightslip · Apache-2.0</div></div>
+</body></html>

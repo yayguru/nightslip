@@ -1,0 +1,46 @@
+{
+  "network": "undeployed",
+  "contractAddress": "211d46c7a3cb2bac75878b578407a3526cabb0cf35220a2faf6205fb015a6455",
+  "deployTx": {
+    "txId": "00b49bc2926b22730931faa19d6dc2d0b13c3da5d365b70a873628be09278650f0",
+    "blockHeight": 48
+  },
+  "txs": {
+    "registerIssuer": {
+      "txId": "0096315595304eb3c90c0312aa6ceb9ed55369d59a65e9cd5dfb3f1df72991fcb7",
+      "txHash": "9041384152adce205f79d1496643ab95d104fd6041fc6b99179d7cedd7e447fe",
+      "blockHeight": 51,
+      "status": "SucceedEntirely"
+    },
+    "issueSlip": {
+      "txId": "00359665b5be03838ca2588edf8d71bb79e4f293f5f4560860f66bf113b42faed7",
+      "txHash": "badbca53263acea3ef5ca97cbf85cca639cb6420a1d906b0c3e55b6371f0269b",
+      "blockHeight": 55,
+      "status": "SucceedEntirely"
+    },
+    "proveIncome": {
+      "txId": "00f4e81167fa28f859b2b8280a784e6f33aef29b152cf4a8fb52e406306bd15ad5",
+      "txHash": "2a08c04de90792e80e3d2f5a52b3e6390e610871fb265606545f59cd6eba5552",
+      "blockHeight": 59,
+      "status": "SucceedEntirely"
+    }
+  },
+  "negativeChecks": {
+    "replayRejected": true,
+    "overRejected": true
+  },
+  "publicLedger": {
+    "admin": "13f4804eeb580a120ecd3436b1a3f9f6c67930737b29ecb48100110018ae4df8",
+    "issuers": "1",
+    "slipCount": "1",
+    "nullifiers": "1",
+    "attestations": [
+      {
+        "challenge": "fcb3c5c17bda1b5556bd70ecb527fdd4be638f39670f71c61d5f1847d7914527",
+        "threshold": "3000",
+        "minPeriod": "202610"
+      }
+    ]
+  },
+  "at": "2026-11-23T02:02:03.019Z"
+}
