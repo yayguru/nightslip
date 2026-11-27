@@ -38,9 +38,9 @@ Renters, borrowers and visa applicants hand full payslips to strangers just to s
 
 Solo builder.
 
-**Required fields, filled in by the entrant** (prefilled from OPDE's known handles, confirm):
-- Discord: `opde` (if the form asks for a numeric user ID: Discord → Settings → Advanced → Developer Mode → right-click your name → Copy User ID: ___)
-- Telegram: `@bangiromethon`
+**Required fields, filled in by the entrant in the form (not stored in this repo):**
+- Discord ID: ___
+- Telegram ID: ___
 
 ## Checklist vs. the official wave rules (checked 27 Nov)
 - [x] Public GitHub repo, Apache-2.0
