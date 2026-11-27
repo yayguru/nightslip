@@ -206,6 +206,7 @@ export function resolveNetwork(opts: ResolveOptions = {}): ResolveResult {
   return { network, config, source };
 }
 
+// Well-known pre-funded genesis seed of the local `undeployed` devnet (public, worthless outside it).
 export const GENESIS_SEED = '0000000000000000000000000000000000000000000000000000000000000001';
 
 // ─── Wallet identity (BIP-39, Lace-compatible) ─────────────────────────────────
