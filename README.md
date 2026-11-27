@@ -2,6 +2,8 @@
 
 > "I earn at least €2,500/month" — proven in zero knowledge, without showing the salary, the employer, or the payslip.
 
+**Live demo:** https://yayguru.github.io/nightslip/ · **Deck:** [`docs/Nightslip-deck.pdf`](docs/Nightslip-deck.pdf) · **Demo script:** [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · **License:** Apache-2.0
+
 Renters, borrowers and visa applicants are routinely asked to hand over full payslips and bank statements just to show that their income clears a bar. That leaks salary, employer, address and more, to people who only needed a yes/no.
 
 **Nightslip** turns a payslip into a private credential on Midnight:
@@ -22,6 +24,27 @@ Which slip, which employer, which employee and the actual salary never leave the
 - ✅ **Real end-to-end run on a Midnight network** (local devnet: node 1.0.0, indexer 4.3.3, proof-server 8.1.0) with genuine ZK proofs: deploy → `registerIssuer` → `issueSlip` → `proveIncome`, plus replay and over-claim rejected. Transcript: [`deployments/undeployed.json`](deployments/undeployed.json), [`deployments/undeployed-run.txt`](deployments/undeployed-run.txt).
 - ✅ Browser demo (React + the compiled contract running in-browser on the Compact runtime) — see the live link in the repo description. Headless e2e: `ui/e2e/ui_e2e.py`.
 - ⏳ Preprod: the same script runs with `--network preprod`; it needs tNIGHT from the faucet (captcha-protected, so it's a manual step).
+
+## Test it in 2 minutes (for judges)
+
+1. Open https://yayguru.github.io/nightslip/ — the compiled Compact circuits run in your browser against an in-memory public ledger.
+2. **Payroll admin:** click *Register issuer* for Acme Robotics.
+3. **Employer:** issue Alice a payslip (e.g. €3,200). Watch the public ledger: only a commitment and a new Merkle root appear.
+4. **Landlord:** set a minimum (e.g. €2,500) and click *Alice: prove income*. An attestation appears; salary, employer and slip stay hidden.
+5. Try again with the same challenge (rejected: nullifier used) or a minimum above the salary (rejected: proof fails).
+
+Locally: `npm install && npm test` runs the 12 contract tests; `npm run devnet:up && npm run e2e:devnet` repeats the full flow on a real Midnight devnet with real proofs.
+
+## Midnight integration
+
+- **Compact contract** `contract/src/nightslip.compact`: `HistoricMerkleTree<16>` of slip commitments, issuer registry, nullifier set, attestations map; circuits `registerIssuer`, `issueSlip`, `proveIncome`.
+- **Witnesses / private state** (`contract/src/witnesses.ts`): slips and the employee secret key stay in local private state; only `disclose()`d values reach the ledger.
+- **midnight-js 4.1.1 + wallet-sdk 1.2.0** (`cli/`): deploy and call the contract through a proof server on a real network (devnet run in `deployments/undeployed.json`; same script targets Preprod).
+- **Compact runtime in the browser** (`ui/`): the same compiled contract drives the demo UI.
+
+## Wave 3 progress
+
+Built during wave 3: the Compact contract and its 12 simulator tests (forgery, theft, replay, stale slip, rogue issuer, multi-employer tree), the real-network e2e on a Midnight devnet with genuine ZK proofs, the browser demo, the Preprod-pinned toolchain (compactc 0.31.1 / ledger v8) and the docs + deck. First submission (not a resubmission).
 
 ## How it works
 
