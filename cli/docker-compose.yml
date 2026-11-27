@@ -54,7 +54,7 @@ services:
       APP__INFRA__STORAGE__PASSWORD: "indexer"
       APP__INFRA__PUB_SUB__PASSWORD: "indexer"
       APP__INFRA__LEDGER_STATE_STORAGE__PASSWORD: "indexer"
-      # Public placeholder from the Midnight devnet docs (ASCII "0123…"), local devnet only, not a secret.
+      # Dummy value (ASCII "0123…"), local devnet only, not a secret.
       APP__INFRA__SECRET: "303132333435363738393031323334353637383930313233343536373839303132"
       APP__INFRA__SPO_NODE__URL: "ws://127.0.0.1:9944"
       APP__INFRA__SPO_NODE__BLOCKFROST_ID: "local-devnet-dummy-id"
