@@ -7,7 +7,8 @@
 **Repo:** https://github.com/yayguru/nightslip (Apache-2.0, topic `midnightntwrk`)
 **Live demo:** https://yayguru.github.io/nightslip/
 **Deck:** docs/Nightslip-deck.pdf in the repo
-**Video:** <link after upload>
+**Video (0:52, 1280×720):** local file `/workspace/night-builds/video/ns.mp4` → OPDE uploads to YouTube (unlisted) and pastes the link here.
+**Deadline:** 30 Nov 2026 15:00 UTC = **16:00 Madrid** (page shows 11/30 10:00 ET). Wave 3 pool 5,000 USDT, split by points; 48 submissions on 27 Nov.
 
 ## Description (paste)
 
@@ -37,6 +38,14 @@ Renters, borrowers and visa applicants hand full payslips to strangers just to s
 
 Solo builder.
 
-**Required fields, filled in by the entrant:**
-- Discord ID: ___
-- Telegram ID: ___
+**Required fields, filled in by the entrant** (prefilled from OPDE's known handles, confirm):
+- Discord: `opde` (if the form asks for a numeric user ID: Discord → Settings → Advanced → Developer Mode → right-click your name → Copy User ID: ___)
+- Telegram: `@bangiromethon`
+
+## Checklist vs. the official wave rules (checked 27 Nov)
+- [x] Public GitHub repo, Apache-2.0
+- [x] README: project, setup, architecture, Midnight integration, how judges test (section "Test it in 2 minutes")
+- [x] At least one Compact contract that compiles (compactc 0.31.1)
+- [x] Slide deck: `docs/Nightslip-deck.pdf`
+- [ ] Demo video link (upload `ns.mp4`)
+- [x] Progress during this wave: first submission, all built in wave 3 (see README "Wave 3 progress")
